@@ -3,7 +3,7 @@ Gets quotes for cryptocurrency prices.
 [![Build Status](https://travis-ci.org/tokenly/crypto-quote-client.svg)](https://travis-ci.org/tokenly/crypto-quote-client)
 
 Usage:
-```
+```php
 $client = new Tokenly\CryptoQuoteClient\Client();
 $quote = $client->getQuote('bitcoinAverage', 'USD', 'BTC');
 echo json_encode($quote, 192)."\n";
