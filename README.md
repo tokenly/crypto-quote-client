@@ -1,5 +1,7 @@
 Gets quotes for cryptocurrency prices.
 
+[![Build Status](https://travis-ci.org/tokenly/crypto-quote-client.svg)](https://travis-ci.org/tokenly/crypto-quote-client)
+
 Usage:
 ```
 $client = new Tokenly\CryptoQuoteClient\Client();
