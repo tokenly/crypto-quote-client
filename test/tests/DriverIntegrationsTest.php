@@ -13,14 +13,14 @@ class DriverIntegrationsTest extends \PHPUnit_Framework_TestCase
 
     public function testPoloniexDriver() {
         $client = $this->getQuoteClient();
-        $quotes = $client->getQuotes('poloniex', [['base' => 'BTC', 'target' => 'LTBC']]);
+        $quotes = $client->getQuotes('poloniex', [['base' => 'BTC', 'target' => 'SJCX']]);
         if (getenv('ECHO_QUOTES')) { echo "\$quotes:\n".json_encode($quotes, 192)."\n"; }
         PHPUnit::assertInstanceOf('Tokenly\CryptoQuoteClient\Quote', $quotes[0]);
         PHPUnit::assertGreaterThan(0.00000025, $quotes[0]['bid']);
         PHPUnit::assertGreaterThan(0.00000025, $quotes[0]['ask']);
         PHPUnit::assertGreaterThan(0.00000025, $quotes[0]['last']);
 
-        $quote = $client->getQuote('poloniex', 'BTC', 'LTBC');
+        $quote = $client->getQuote('poloniex', 'BTC', 'SJCX');
         if (getenv('ECHO_QUOTES')) { echo "\$quote:\n".json_encode($quote, 192)."\n"; }
         PHPUnit::assertGreaterThan(0.00000025, $quote['bid']);
         PHPUnit::assertGreaterThan(0.00000025, $quote['ask']);
@@ -41,6 +41,12 @@ class DriverIntegrationsTest extends \PHPUnit_Framework_TestCase
         PHPUnit::assertGreaterThan(100, $quote['bid']);
         PHPUnit::assertGreaterThan(100, $quote['ask']);
         PHPUnit::assertGreaterThan(100, $quote['last']);
+
+        $quote = $client->getQuote('bitcoinAverage', 'EUR', 'BTC');
+        if (getenv('ECHO_QUOTES')) { echo "\$quote:\n".json_encode($quote, 192)."\n"; }
+        PHPUnit::assertGreaterThan(100, $quote['bid']);
+        PHPUnit::assertGreaterThan(100, $quote['ask']);
+        PHPUnit::assertGreaterThan(100, $quote['last']);
     }
 
 
@@ -54,6 +60,12 @@ class DriverIntegrationsTest extends \PHPUnit_Framework_TestCase
         PHPUnit::assertGreaterThan(100, $quotes[0]['last']);
 
         $quote = $client->getQuote('bitstamp', 'USD', 'BTC');
+        if (getenv('ECHO_QUOTES')) { echo "\$quote:\n".json_encode($quote, 192)."\n"; }
+        PHPUnit::assertGreaterThan(100, $quote['bid']);
+        PHPUnit::assertGreaterThan(100, $quote['ask']);
+        PHPUnit::assertGreaterThan(100, $quote['last']);
+
+        $quote = $client->getQuote('bitstamp', 'EUR', 'BTC');
         if (getenv('ECHO_QUOTES')) { echo "\$quote:\n".json_encode($quote, 192)."\n"; }
         PHPUnit::assertGreaterThan(100, $quote['bid']);
         PHPUnit::assertGreaterThan(100, $quote['ask']);

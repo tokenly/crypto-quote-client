@@ -14,13 +14,13 @@ class Bitstamp implements Driver
 {
 
     public function getQuote($base, $target) {
-        if ($base !== 'USD') { throw new Exception("Only a base of USD is supported", 1); }
+        if (!in_array($base,['USD','EUR'])) { throw new Exception("Only a base of USD or EUR is supported", 1); }
         if ($target !== 'BTC') { throw new Exception("Only a target of BTC is supported", 1); }
 
         $transport = new Http();
-        $result = $transport->getJSON('https://www.bitstamp.net/api/ticker/');
+        $result = $transport->getJSON('https://www.bitstamp.net/api/v2/ticker/btc'.strtolower($base).'/');
 
-        return $this->transformResult($result);
+        return $this->transformResult($base, $result);
     }
 
     public function getQuotes($currency_pairs) {
@@ -32,8 +32,7 @@ class Bitstamp implements Driver
         return [$this->getQuote($base, $target)];
     }
 
-    protected function transformResult($result) {
-        $base   = 'USD';
+    protected function transformResult($base, $result) {
         $target = 'BTC';
 
         // values should be a float (not satoshis)
