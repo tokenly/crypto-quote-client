@@ -18,7 +18,7 @@ class BitcoinAverage implements Driver
         if ($target !== 'BTC') { throw new Exception("Only a target of BTC is supported", 1); }
 
         $transport = new Http();
-        $result = $transport->getJSON('https://api.bitcoinaverage.com/ticker/global/'.$base.'/');
+        $result = $transport->getJSON('https://apiv2.bitcoinaverage.com/indices/global/ticker/'.$target.''.$base.'');
 
         return $this->transformResult($base, $result);
     }
