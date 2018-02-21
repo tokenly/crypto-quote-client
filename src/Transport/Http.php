@@ -15,8 +15,10 @@ class Http
     var $timeout = 5;
 
     public function getJSON($url) {
-        $json = $this->request('GET', $url)->json();
-        if (!is_array($json)) { throw new Exception("Unexpected response", 1); }
+        $raw_body = $this->request('GET', $url)->getBody();
+
+        $json = json_decode($raw_body, true);
+        if (!is_array($json)) { throw new Exception("Unexpected response body", 1); }
 
         return $json;
     }
@@ -29,10 +31,10 @@ class Http
             'timeout' => $this->timeout,
         ];
 
-        $request = $client->createRequest($method, $url, $options);
+        $response = $client->request($method, $url, $options);
 
         // return the response
-        return $client->send($request);
+        return $response;
 
     }
 

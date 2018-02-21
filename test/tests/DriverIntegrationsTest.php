@@ -1,7 +1,6 @@
 <?php
 
 use Tokenly\CryptoQuoteClient\Client;
-use \Exception;
 use \PHPUnit_Framework_Assert as PHPUnit;
 
 /*
@@ -13,14 +12,14 @@ class DriverIntegrationsTest extends \PHPUnit_Framework_TestCase
 
     public function testPoloniexDriver() {
         $client = $this->getQuoteClient();
-        $quotes = $client->getQuotes('poloniex', [['base' => 'BTC', 'target' => 'SJCX']]);
+        $quotes = $client->getQuotes('poloniex', [['base' => 'BTC', 'target' => 'FLDC']]);
         if (getenv('ECHO_QUOTES')) { echo "\$quotes:\n".json_encode($quotes, 192)."\n"; }
         PHPUnit::assertInstanceOf('Tokenly\CryptoQuoteClient\Quote', $quotes[0]);
         PHPUnit::assertGreaterThan(0.00000025, $quotes[0]['bid']);
         PHPUnit::assertGreaterThan(0.00000025, $quotes[0]['ask']);
         PHPUnit::assertGreaterThan(0.00000025, $quotes[0]['last']);
 
-        $quote = $client->getQuote('poloniex', 'BTC', 'SJCX');
+        $quote = $client->getQuote('poloniex', 'BTC', 'FLDC');
         if (getenv('ECHO_QUOTES')) { echo "\$quote:\n".json_encode($quote, 192)."\n"; }
         PHPUnit::assertGreaterThan(0.00000025, $quote['bid']);
         PHPUnit::assertGreaterThan(0.00000025, $quote['ask']);
