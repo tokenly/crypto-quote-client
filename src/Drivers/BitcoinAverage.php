@@ -5,7 +5,7 @@ namespace Tokenly\CryptoQuoteClient\Drivers;
 use Exception;
 use Tokenly\CryptoQuoteClient\Drivers\Driver;
 use Tokenly\CryptoQuoteClient\Quote;
-use Tokenly\CryptoQuoteClient\Transport\Http;
+use Tokenly\CryptoQuoteClient\Transport\Concerns\HasHttpTransportOptions;
 
 /**
  * A crypto quote client
@@ -13,13 +13,14 @@ use Tokenly\CryptoQuoteClient\Transport\Http;
 class BitcoinAverage implements Driver
 {
 
+    use HasHttpTransportOptions;
+
     public function getQuote($base, $target)
     {
         if (!in_array($base, ['USD', 'EUR'])) {throw new Exception("Only a base of USD or EUR is supported", 1);}
         if ($target !== 'BTC') {throw new Exception("Only a target of BTC is supported", 1);}
 
-        $transport = new Http();
-        $result = $transport->getJSON('https://apiv2.bitcoinaverage.com/indices/global/ticker/' . $target . '' . $base . '');
+        $result = $this->getHttpTransport()->getJSON('https://apiv2.bitcoinaverage.com/indices/global/ticker/' . $target . '' . $base . '');
 
         return $this->transformResult($base, $result);
     }

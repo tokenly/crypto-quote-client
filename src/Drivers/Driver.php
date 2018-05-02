@@ -12,4 +12,6 @@ interface Driver
 
     public function getQuotes($currency_pairs);
 
+    public function setTransportOptions($options);
+
 }

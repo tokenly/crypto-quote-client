@@ -5,13 +5,15 @@ namespace Tokenly\CryptoQuoteClient\Drivers;
 use Exception;
 use Tokenly\CryptoQuoteClient\Drivers\Driver;
 use Tokenly\CryptoQuoteClient\Quote;
-use Tokenly\CryptoQuoteClient\Transport\Http;
+use Tokenly\CryptoQuoteClient\Transport\Concerns\HasHttpTransportOptions;
 
 /**
  * A crypto quote client
  */
 class Poloniex implements Driver
 {
+
+    use HasHttpTransportOptions;
 
     public function getQuote($base, $target)
     {
@@ -21,8 +23,7 @@ class Poloniex implements Driver
 
     public function getQuotes($currency_pairs)
     {
-        $transport = new Http();
-        $result = $transport->getJSON('https://poloniex.com/public?command=returnTicker');
+        $result = $this->getHttpTransport()->getJSON('https://poloniex.com/public?command=returnTicker');
         return $this->transformResult($result, $currency_pairs);
     }
 

@@ -11,8 +11,11 @@ use GuzzleHttp\Client as GuzzleClient;
 class Http
 {
 
-    // 5 second timeout by default
-    var $timeout = 5;
+    protected $options = null;
+
+    public function setOptions($options) {
+        $this->options = $options;
+    }
 
     public function getJSON($url) {
         $raw_body = $this->request('GET', $url)->getBody();
@@ -27,9 +30,11 @@ class Http
         $client = new GuzzleClient();
 
         // set options
-        $options = [
-            'timeout' => $this->timeout,
-        ];
+        $options = array_merge([
+                'timeout' => 5,
+            ], 
+            ($this->options === null ? [] : $this->options)
+        );
 
         $response = $client->request($method, $url, $options);
 

@@ -15,15 +15,21 @@ class Client
 
     }
 
-    public function getQuote($driver_name, $base, $target)
+    public function getQuote($driver_name, $base, $target, $options = null)
     {
         $driver = $this->getDriver($driver_name);
+        if ($options !== null) {
+            $driver->setTransportOptions($options);
+        }
         return $driver->getQuote($base, $target);
     }
 
-    public function getQuotes($driver_name, $currency_pairs)
+    public function getQuotes($driver_name, $currency_pairs, $options = null)
     {
         $driver = $this->getDriver($driver_name);
+        if ($options !== null) {
+            $driver->setTransportOptions($options);
+        }
         return $driver->getQuotes($currency_pairs);
     }
 

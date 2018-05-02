@@ -5,7 +5,7 @@ namespace Tokenly\CryptoQuoteClient\Drivers;
 use Exception;
 use Tokenly\CryptoQuoteClient\Drivers\Driver;
 use Tokenly\CryptoQuoteClient\Quote;
-use Tokenly\CryptoQuoteClient\Transport\Http;
+use Tokenly\CryptoQuoteClient\Transport\Concerns\HasHttpTransportOptions;
 
 /**
  * A crypto quote client driver
@@ -13,13 +13,14 @@ use Tokenly\CryptoQuoteClient\Transport\Http;
 class CoinMarketCap implements Driver
 {
 
+    use HasHttpTransportOptions;
+
     public function getQuote($base, $target)
     {
         if (!in_array($base, ['USD', 'BTC'])) {throw new Exception("Only a base of USD or BTC is supported", 1);}
 
-        $transport = new Http();
-        $result = $transport->getJSON('https://api.coinmarketcap.com/v1/ticker/' . $target . '/');
-        if (!$result OR !is_array($result)) {
+        $result = $this->getHttpTransport()->getJSON('https://api.coinmarketcap.com/v1/ticker/' . $target . '/');
+        if (!$result or !is_array($result)) {
             throw new Exception("Unable to find data for $target", 1);
         }
 
@@ -45,7 +46,7 @@ class CoinMarketCap implements Driver
             case 'USD':
                 $price = $result['price_usd'];
                 break;
-            
+
             default:
                 throw new Exception("Unknown base: $base", 1);
         }

@@ -5,7 +5,7 @@ namespace Tokenly\CryptoQuoteClient\Drivers;
 use Exception;
 use Tokenly\CryptoQuoteClient\Drivers\Driver;
 use Tokenly\CryptoQuoteClient\Quote;
-use Tokenly\CryptoQuoteClient\Transport\Http;
+use Tokenly\CryptoQuoteClient\Transport\Concerns\HasHttpTransportOptions;
 
 /**
  * A crypto quote client
@@ -13,19 +13,19 @@ use Tokenly\CryptoQuoteClient\Transport\Http;
 class Bittrex implements Driver
 {
 
+    use HasHttpTransportOptions;
+
     public function getQuote($base, $target)
     {
         if (!in_array($base, ['BTC'])) {throw new Exception("Only a base of BTC is supported", 1);}
 
-        $transport = new Http();
-        $result = $transport->getJSON('https://bittrex.com/api/v1.1/public/getticker?market='.$base.'-'.$target.'');
-        if (!$result OR !is_array($result)) {
+        $result = $this->getHttpTransport()->getJSON('https://bittrex.com/api/v1.1/public/getticker?market=' . $base . '-' . $target . '');
+        if (!$result or !is_array($result)) {
             throw new Exception("Unable to find data for $target", 1);
         }
 
         return $this->transformResult($base, $target, $result);
     }
-
 
     public function getQuotes($currency_pairs)
     {
