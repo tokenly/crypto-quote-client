@@ -22,7 +22,7 @@ trait HasHttpTransportOptions
     {
         $transport = new Http();
         $transport->setOptions($this->transport_options);
-        return $transport();
+        return $transport;
     }
 
 }
