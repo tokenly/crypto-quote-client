@@ -17,7 +17,7 @@ class BitcoinAverage implements Driver
 
     public function getQuote($base, $target)
     {
-        if (!in_array($base, ['USD', 'EUR'])) {throw new Exception("Only a base of USD or EUR is supported", 1);}
+        if (!in_array($base, ['USD', 'CAD', 'EUR'])) {throw new Exception("Only a base of USD, CAD or EUR is supported", 1);}
         if ($target !== 'BTC') {throw new Exception("Only a target of BTC is supported", 1);}
 
         $result = $this->getHttpTransport()->getJSON('https://apiv2.bitcoinaverage.com/indices/global/ticker/' . $target . '' . $base . '');
