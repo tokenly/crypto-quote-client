@@ -11,7 +11,7 @@ use Tokenly\CryptoQuoteClient\Transport\Concerns\HasHttpTransportOptions;
 /**
  * A crypto quote client
  */
-class Bittrex implements Driver
+class Binance implements Driver
 {
 
     use HasHttpTransportOptions, CachesAggregateTickerResponse;
@@ -24,13 +24,14 @@ class Bittrex implements Driver
     public function getQuotes($currency_pairs)
     {
         $aggregate_ticker_response = $this->getAggregateTickerResponseWithCache(function () {
-            $result = $this->getHttpTransport()->getJSON('https://bittrex.com/api/v1.1/public/getmarketsummaries');
+            $price_ticker = $this->getHttpTransport()->getJSON('https://api.binance.com/api/v3/ticker/price');
+            $book_ticker = $this->getHttpTransport()->getJSON('https://api.binance.com/api/v3/ticker/bookTicker');
 
-            if (!$result['success']) {
-                throw new Exception("Failed to get bittrex markets: ".$result['message'] ?? 'no message', 1);
+            if (!$price_ticker or !$book_ticker) {
+                throw new Exception("Failed to get binance markets", 1);
             }
 
-            return $result;
+            return [$price_ticker, $book_ticker];
         });
 
         return $this->transformResult($aggregate_ticker_response, $currency_pairs);
@@ -38,6 +39,8 @@ class Bittrex implements Driver
 
     protected function transformResult($aggregate_ticker_response, $currency_pairs)
     {
+        [$price_ticker, $book_ticker] = $aggregate_ticker_response;
+
         $quotes_output = [];
 
         $currency_pairs_map = [];
@@ -49,20 +52,25 @@ class Bittrex implements Driver
                 throw new Exception("Only bases of BTC and ETH are supported", 1);
             }
 
-            $currency_pairs_map[$base . '-' . $target] = $offset;
+            $currency_pairs_map[$target . $base] = $offset;
         }
 
-        $result = $aggregate_ticker_response['result'];
-        foreach ($result as $market) {
-            if (isset($currency_pairs_map[$market['MarketName']])) {
-                $offset = $currency_pairs_map[$market['MarketName']];
+        foreach ($book_ticker as $market) {
+            if (isset($currency_pairs_map[$market['symbol']])) {
+                $offset = $currency_pairs_map[$market['symbol']];
 
-                $ask = $market['Ask'];
-                $bid = $market['Bid'];
-                $last = $market['Last'];
                 $timestamp = time();
+                $ask = $market['askPrice'];
+                $bid = $market['bidPrice'];
+                
+                $last = null;
+                foreach ($price_ticker as $price) {
+                    if ($price['symbol'] == $market['symbol']) {
+                        $last = $price['price'];
+                    }
+                }
 
-                $quotes_output[$offset] = new Quote('bittrex', $base, $target, $ask, $bid, $last, $timestamp);
+                $quotes_output[$offset] = new Quote('binance', $base, $target, $ask, $bid, $last, $timestamp);
             }
         }
 
@@ -72,7 +80,7 @@ class Bittrex implements Driver
                 if (!isset($quotes_output[$offset])) {
                     $base = $currency_pair['base'];
                     $target = $currency_pair['target'];
-                    throw new Exception("Unknown bittrex currency pair: {$base}-{$target}", 1);
+                    throw new Exception("Unknown binance currency pair: {$base}-{$target}", 1);
                 }
             }
         }

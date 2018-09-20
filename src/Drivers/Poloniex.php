@@ -5,6 +5,7 @@ namespace Tokenly\CryptoQuoteClient\Drivers;
 use Exception;
 use Tokenly\CryptoQuoteClient\Drivers\Driver;
 use Tokenly\CryptoQuoteClient\Quote;
+use Tokenly\CryptoQuoteClient\Transport\Concerns\CachesAggregateTickerResponse;
 use Tokenly\CryptoQuoteClient\Transport\Concerns\HasHttpTransportOptions;
 
 /**
@@ -13,8 +14,63 @@ use Tokenly\CryptoQuoteClient\Transport\Concerns\HasHttpTransportOptions;
 class Poloniex implements Driver
 {
 
-    use HasHttpTransportOptions;
+    use HasHttpTransportOptions, CachesAggregateTickerResponse;
 
+
+    public function getQuote($base, $target)
+    {
+        return $this->getQuotes([['base' => $base, 'target' => $target]])[0];
+    }
+
+    public function getQuotes($currency_pairs)
+    {
+        $aggregate_ticker_response = $this->getAggregateTickerResponseWithCache(function () {
+            $result = $this->getHttpTransport()->getJSON('https://poloniex.com/public?command=returnTicker');
+
+            if (!$result) {
+                throw new Exception("Failed to get poloniex markets", 1);
+            }
+
+            return $result;
+        });
+
+        return $this->transformResult($aggregate_ticker_response, $currency_pairs);
+    }
+
+    protected function transformResult($aggregate_ticker_response, $currency_pairs)
+    {
+        $quotes_output = [];
+
+        $currency_pairs_map = [];
+        foreach ($currency_pairs as $offset => $currency_pair) {
+            $base = $currency_pair['base'];
+            $target = $currency_pair['target'];
+            if (!in_array($base, ['BTC', 'ETH'])) {
+                throw new Exception("Only bases of BTC and ETH are supported", 1);
+            }
+
+            $ticker_key = $base . '_' . $target;
+            if (isset($aggregate_ticker_response[$ticker_key])) {
+                $market = $aggregate_ticker_response[$ticker_key];
+
+                $ask = $market['lowestAsk'];
+                $bid = $market['highestBid'];
+                $last = $market['last'];
+                $timestamp = time();
+
+                $quotes_output[$offset] = new Quote('poloniex', $base, $target, $ask, $bid, $last, $timestamp);
+            } else {
+                throw new Exception("Unknown poloniex currency pair: {$base}_{$target}", 1);
+                
+            }
+
+        }
+
+        return $quotes_output;
+    }
+
+
+/*
     public function getQuote($base, $target)
     {
         $quotes = $this->getQuotes([['base' => $base, 'target' => $target]]);
@@ -48,5 +104,5 @@ class Poloniex implements Driver
 
         return $quotes;
     }
-
+*/
 }
