@@ -16,7 +16,7 @@ trait CachesAggregateTickerResponse
             $key = class_basename($this) . '.ticker';
             $CACHE_MINUTES = 1;
 
-            $ticker_response = Cache::remember($key, $CACHE_MINUTES, function () {
+            $ticker_response = Cache::remember($key, $CACHE_MINUTES, function () use ($buildAggregateTickerResponse_fn) {
                 return $buildAggregateTickerResponse_fn();
             });
         } else {
