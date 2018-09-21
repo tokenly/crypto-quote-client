@@ -24,7 +24,30 @@ class Poloniex implements Driver
 
     public function getQuotes($currency_pairs)
     {
-        $aggregate_ticker_response = $this->getAggregateTickerResponseWithCache(function () {
+        $aggregate_ticker_response = $this->aggregateTickerResponse();
+
+        return $this->transformResult($aggregate_ticker_response, $currency_pairs);
+    }
+
+    public function getAllCurrencyPairs()
+    {
+        $aggregate_ticker_response = $this->aggregateTickerResponse();
+
+        $currency_pairs = [];
+        foreach ($aggregate_ticker_response as $market_ticker => $market) {
+            [$base, $target] = explode('_', $market_ticker);
+            if (in_array($base, ['BTC', 'ETH'])) {
+                $currency_pairs[] = ['base' => $base, 'target' => $target];
+            }
+        }
+
+        return $currency_pairs;
+    }
+
+
+    protected function aggregateTickerResponse()
+    {
+        return $this->getAggregateTickerResponseWithCache(function () {
             $result = $this->getHttpTransport()->getJSON('https://poloniex.com/public?command=returnTicker');
 
             if (!$result) {
@@ -33,8 +56,6 @@ class Poloniex implements Driver
 
             return $result;
         });
-
-        return $this->transformResult($aggregate_ticker_response, $currency_pairs);
     }
 
     protected function transformResult($aggregate_ticker_response, $currency_pairs)

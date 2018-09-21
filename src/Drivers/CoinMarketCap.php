@@ -37,6 +37,11 @@ class CoinMarketCap implements Driver
         return [$this->getQuote($base, $target)];
     }
 
+    public function getAllCurrencyPairs()
+    {
+        throw new Exception("All currency pairs for CoinMarketCap not implemented", 1);
+    }
+
     protected function transformResult($base, $target, $result)
     {
         switch ($base) {

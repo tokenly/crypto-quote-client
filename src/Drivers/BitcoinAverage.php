@@ -35,6 +35,15 @@ class BitcoinAverage implements Driver
         return [$this->getQuote($base, $target)];
     }
 
+    public function getAllCurrencyPairs()
+    {
+        return [
+            ['base' => 'USD', 'target' => 'BTC'],
+            ['base' => 'CAD', 'target' => 'BTC'],
+            ['base' => 'EUR', 'target' => 'BTC'],
+        ];
+    }
+
     protected function transformResult($base, $result)
     {
         $target = 'BTC';

@@ -14,4 +14,6 @@ interface Driver
 
     public function setTransportOptions($options);
 
+    public function getAllCurrencyPairs();
+
 }

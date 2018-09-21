@@ -24,6 +24,9 @@ class DriverIntegrationsTest extends \PHPUnit_Framework_TestCase
         PHPUnit::assertGreaterThan(0.00000025, $quote['bid']);
         PHPUnit::assertGreaterThan(0.00000025, $quote['ask']);
         PHPUnit::assertGreaterThan(0.00000025, $quote['last']);
+
+        $currency_pairs = $client->getAllCurrencyPairs('bittrex');
+        if (getenv('ECHO_CURRENCY_PAIRS')) { echo "\$currency_pairs:\n".json_encode($currency_pairs, 192)."\n"; }
     }
 
     public function testPoloniexDriver() {
@@ -40,6 +43,9 @@ class DriverIntegrationsTest extends \PHPUnit_Framework_TestCase
         PHPUnit::assertGreaterThan(0.00000025, $quote['bid']);
         PHPUnit::assertGreaterThan(0.00000025, $quote['ask']);
         PHPUnit::assertGreaterThan(0.00000025, $quote['last']);
+
+        $currency_pairs = $client->getAllCurrencyPairs('poloniex');
+        if (getenv('ECHO_CURRENCY_PAIRS')) { echo "\$currency_pairs:\n".json_encode($currency_pairs, 192)."\n"; }
     }
 
     public function testBinanceDriver() {
@@ -56,6 +62,9 @@ class DriverIntegrationsTest extends \PHPUnit_Framework_TestCase
         PHPUnit::assertGreaterThan(0.00000025, $quote['bid']);
         PHPUnit::assertGreaterThan(0.00000025, $quote['ask']);
         PHPUnit::assertGreaterThan(0.00000025, $quote['last']);
+
+        $currency_pairs = $client->getAllCurrencyPairs('binance');
+        if (getenv('ECHO_CURRENCY_PAIRS')) { echo "\$currency_pairs:\n".json_encode($currency_pairs, 192)."\n"; }
     }
 
     public function testBitcoinAverageDriver() {
@@ -78,6 +87,9 @@ class DriverIntegrationsTest extends \PHPUnit_Framework_TestCase
         PHPUnit::assertGreaterThan(100, $quote['bid']);
         PHPUnit::assertGreaterThan(100, $quote['ask']);
         PHPUnit::assertGreaterThan(100, $quote['last']);
+
+        $currency_pairs = $client->getAllCurrencyPairs('bitcoinAverage');
+        if (getenv('ECHO_CURRENCY_PAIRS')) { echo "\$currency_pairs:\n".json_encode($currency_pairs, 192)."\n"; }
     }
 
 
@@ -101,6 +113,9 @@ class DriverIntegrationsTest extends \PHPUnit_Framework_TestCase
         PHPUnit::assertGreaterThan(100, $quote['bid']);
         PHPUnit::assertGreaterThan(100, $quote['ask']);
         PHPUnit::assertGreaterThan(100, $quote['last']);
+
+        $currency_pairs = $client->getAllCurrencyPairs('bitstamp');
+        if (getenv('ECHO_CURRENCY_PAIRS')) { echo "\$currency_pairs:\n".json_encode($currency_pairs, 192)."\n"; }
     }
 
     protected function getQuoteClient() {

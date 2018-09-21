@@ -23,7 +23,14 @@ class Binance implements Driver
 
     public function getQuotes($currency_pairs)
     {
-        $aggregate_ticker_response = $this->getAggregateTickerResponseWithCache(function () {
+        $aggregate_ticker_response = $this->aggregateTickerResponse();
+
+        return $this->transformResult($aggregate_ticker_response, $currency_pairs);
+    }
+
+    protected function aggregateTickerResponse()
+    {
+        return $this->getAggregateTickerResponseWithCache(function () {
             $price_ticker = $this->getHttpTransport()->getJSON('https://api.binance.com/api/v3/ticker/price');
             $book_ticker = $this->getHttpTransport()->getJSON('https://api.binance.com/api/v3/ticker/bookTicker');
 
@@ -33,8 +40,23 @@ class Binance implements Driver
 
             return [$price_ticker, $book_ticker];
         });
+    }
 
-        return $this->transformResult($aggregate_ticker_response, $currency_pairs);
+    public function getAllCurrencyPairs()
+    {
+        [$price_ticker, $book_ticker] = $this->aggregateTickerResponse();
+
+        $currency_pairs = [];
+        foreach ($price_ticker as $market) {
+            $symbol = $market['symbol'];
+            $base = substr($symbol, -3);
+            if (in_array($base, ['BTC', 'ETH'])) {
+                $target = substr($symbol, 0, -3);
+                $currency_pairs[] = ['base' => $base, 'target' => $target];
+            }
+        }
+
+        return $currency_pairs;
     }
 
     protected function transformResult($aggregate_ticker_response, $currency_pairs)

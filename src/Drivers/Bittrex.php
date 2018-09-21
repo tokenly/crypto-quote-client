@@ -23,17 +23,37 @@ class Bittrex implements Driver
 
     public function getQuotes($currency_pairs)
     {
-        $aggregate_ticker_response = $this->getAggregateTickerResponseWithCache(function () {
+        $aggregate_ticker_response = $this->aggregateTickerResponse();
+        return $this->transformResult($aggregate_ticker_response, $currency_pairs);
+    }
+
+    public function getAllCurrencyPairs()
+    {
+        $aggregate_ticker_response = $this->aggregateTickerResponse();
+
+        $currency_pairs = [];
+        $result = $aggregate_ticker_response['result'];
+        foreach ($result as $market) {
+            [$base, $target] = explode('-', $market['MarketName']);
+            if (in_array($base, ['BTC', 'ETH'])) {
+                $currency_pairs[] = ['base' => $base, 'target' => $target];
+            }
+        }
+
+        return $currency_pairs;
+    }
+
+    protected function aggregateTickerResponse()
+    {
+        return $this->getAggregateTickerResponseWithCache(function () {
             $result = $this->getHttpTransport()->getJSON('https://bittrex.com/api/v1.1/public/getmarketsummaries');
 
             if (!$result['success']) {
-                throw new Exception("Failed to get bittrex markets: ".$result['message'] ?? 'no message', 1);
+                throw new Exception("Failed to get bittrex markets: " . $result['message'] ?? 'no message', 1);
             }
 
             return $result;
         });
-
-        return $this->transformResult($aggregate_ticker_response, $currency_pairs);
     }
 
     protected function transformResult($aggregate_ticker_response, $currency_pairs)

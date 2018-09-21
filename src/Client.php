@@ -33,6 +33,12 @@ class Client
         return $driver->getQuotes($currency_pairs);
     }
 
+    public function getAllCurrencyPairs($driver_name)
+    {
+        $driver = $this->getDriver($driver_name);
+        return $driver->getAllCurrencyPairs();
+    }
+
     public function getDriver($driver_name)
     {
         $driver_class_name = ucwords($driver_name);
