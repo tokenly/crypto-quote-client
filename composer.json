@@ -13,10 +13,10 @@
     "require": {
         "php": ">=7.1.0",
         "guzzlehttp/guzzle": "~6",
-        "tokenly/crypto-quantity": "^2"
+        "tokenly/crypto-quantity": "dev-master"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4"
+        "phpunit/phpunit": "~7"
     },
     "autoload": {
         "psr-4": {"Tokenly\\CryptoQuoteClient\\": "src/"}
