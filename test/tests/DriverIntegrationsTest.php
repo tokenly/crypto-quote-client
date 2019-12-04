@@ -1,12 +1,12 @@
 <?php
 
-use Tokenly\CryptoQuoteClient\Client;
-use \PHPUnit_Framework_Assert as PHPUnit;
+use \PHPUnit\Framework\Assert as PHPUnit;
+use PHPUnit\Framework\TestCase;
 
 /*
 * 
 */
-class DriverIntegrationsTest extends \PHPUnit_Framework_TestCase
+class DriverIntegrationsTest extends TestCase
 {
 
 
